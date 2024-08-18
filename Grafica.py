@@ -13,8 +13,8 @@ import traza
 root = tk.Tk()
 root.withdraw() #Oculatar la ventana principal
 #radio de la circunferencia ---> Un cilindro en 3D
-a = simpledialog.askfloat("Valor de a","Ingrese el valor de a: ")
-n = simpledialog.askinteger("Valor de n","¿Cuántos sub-intervalos n desea en su sumatoria?: ")
+a = simpledialog.askfloat("Ingreso de datos","Ingrese el valor de a: ")
+n = simpledialog.askinteger("Ingreso de datos","¿Cuántos sub-intervalos n desea en su sumatoria?: ")
 #Cerrar la ventana
 root.destroy()
 
