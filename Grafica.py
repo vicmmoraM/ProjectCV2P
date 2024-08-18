@@ -4,85 +4,67 @@ from mpl_toolkits.mplot3d import Axes3D
 import tkinter as tk
 from tkinter import simpledialog
 from tkinter import messagebox
+import traza
+#
+#
+# @author Victor Morales, José Adrian, Jeycop Navarrete, Andres Saltos :D
+#
+#
+root = tk.Tk()
+root.withdraw() #Oculatar la ventana principal
+#radio de la circunferencia ---> Un cilindro en 3D
+a = simpledialog.askfloat("Valor de a","Ingrese el valor de a: ")
+n = simpledialog.askinteger("Valor de n","¿Cuántos sub-intervalos n desea en su sumatoria?: ")
+#Cerrar la ventana
+root.destroy()
 
-def obtener_datos():
-    while True:
-        entrada = simpledialog.askstring("Ingreso de datos", "Ingrese el valor a: ")
-        entrada1 = simpledialog.askstring("Ingreso de datos", "Ingrese el valor de n: ")
-        if entrada is None:
-            return None
-        if entrada1 is None:
-            return None
+#Validaciones de datos
+if a is not None and n is not None:
+    valorTraza = traza.trazaConSum(a,n)
 
-        try:
-            radio = float(entrada)
-            if radio <= 0:
-                raise ValueError("El radio debe ser un número positivo.")
-            
-            n = int(entrada1)
-            if n <= 0:
-                raise ValueError("La cantidad de subintervalos no puede ser negativo")   
-            return radio,n
-        except (ValueError, TypeError) as e:
-            messagebox.showerror("Error", f"Entrada no válida. Por favor, ingrese un valor numérico positivo.")
+    #interfaz :D
+    figura = plt.figure(figsize=(16,8))
+    ax = figura.add_subplot(111, projection = '3d')
 
-def Longitud_traza(radio, n):
-    theta = np.linspace(0, 2 * np.pi, n)
-    dtheta = theta[1] - theta[0]
+    def GraficarCilindro(a):
+        #Coordenas Polares
+        theta_ = np.linspace(0, 2*np.pi, 100)
+        z_ = np.linspace(-10*a,10*a,100)
+        theta, z_cili = np.meshgrid(theta_,z_)
+        r = a
 
-    #Circunferencia Parametrizada
-    x = radio * np.cos(theta)
-    y = radio * np.sin(theta)
-    z = (8 - x - y)/2
+        x_cilindro = r*np.cos(theta)
+        y_cilindro = r*np.sin(theta)
 
-    #Derivadas uwu
-    dx = -radio * np.sin(theta)
-    dy = radio * np.cos(theta)
-    dz = - radio * (np.cos(theta) + np.sin(theta)) / 2
+        ax.plot_surface(x_cilindro,y_cilindro,z_cili, color = 'm',zorder = 0,alpha = 0.15)
 
-    ds = np.sqrt(dx**2 * dy**2 + dz**2)
+    def GraficarPlano(a):
+        def z(x,y):
+            return (8-x-y)/2
+        x_plano = np.linspace(-10*a/2,10*a/2)
+        y_plano = np.linspace(-10*a/2,10*a/2)
+        x_plano,y_plano = np.meshgrid(x_plano,y_plano)
+        z_plano = z(x_plano,y_plano)
+        ax.plot_surface(x_plano,y_plano,z_plano, color = 'g', zorder = 2, alpha = 0.45)
+    
+    def traza(a):
+        t = np.linspace(0,2*np.pi)
+        exprx = a*np.cos(t)
+        expry = a*np.sin(t)
+        exprz = 4 - (1/2)*(exprx + expry)
+        ax.plot(exprx,expry,exprz,color = 'black', zorder = 1, label = 'Traza :D')
 
-    lg = np.sum(ds * dtheta)
-    return lg, x, y, z
+    GraficarCilindro(a)
+    GraficarPlano(a)
+    traza(a)
+    a_nya = a**2
+    ax.text2D(0.05, 0.95, f"El valor de la traza es: {round(valorTraza,4)}", transform=ax.transAxes)
+    #Configurar aspecto nya
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    ax.set_zlabel('Z')
+    ax.set_title(f"Calculo de Traza $x^2 + y^2 = {a_nya}$ y x+y+2z = 8")
+    
 
-def Graficar(radio,x,y,z,lg):
-    figura = plt.figure()
-    ejes = figura.add_subplot(111, projection='3d')
-    
-    
-    altura = 150  
-    num_puntos = 100
-    theta = np.linspace(0, 2 * np.pi, num_puntos)
-    z_cilindro = np.linspace(-altura / 2, altura / 2, num_puntos)
-    theta, Z_cilindro = np.meshgrid(theta, z_cilindro)
-    X_cilindro = radio * np.cos(theta)
-    Y_cilindro = radio * np.sin(theta)
-    
-    ejes.plot_surface(X_cilindro, Y_cilindro, Z_cilindro, alpha=0.6, color='b', rstride=10, cstride=10)
-    # Graficar la curva de intersección
-    ejes.plot(x, y, z, color='k', lw=2)
-    # Graficar el plano
-    margen = radio * 1.5  
-    x_plano = np.linspace(-margen, margen, 100)
-    y_plano = np.linspace(-margen, margen, 100)
-    x_plano, y_plano = np.meshgrid(x_plano, y_plano)
-    z_plano = (8 - x_plano - y_plano) / 2
-    
-    ejes.plot_surface(x_plano, y_plano, z_plano, alpha=0.3, color='r', rstride=10, cstride=10)
-    
-    
-    # Configurar los límites y etiquetas
-    ejes.set_xlim([-margen, margen])
-    ejes.set_ylim([-margen, margen])
-    ejes.set_zlim([-altura / 2 - 10, altura / 2 + 10])  # Ajustar el límite para el cilindro más alto
-    ejes.set_xlabel('X')
-    ejes.set_ylabel('Y')
-    ejes.set_zlabel('Z')
-    ejes.set_title("nya")
-    ejes.set_title(f"La Longitud del arco es: {round(lg,2)}")
-    ejes.legend()
-    
-    # Vista 
-    ejes.view_init(elev=20, azim=30)  
-    
+    ax.legend()
     plt.show()
