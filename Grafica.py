@@ -10,7 +10,7 @@ import traza
 #
 #
 root = tk.Tk()
-root.withdraw() #Oculatar la ventana principal
+root.withdraw() #Ocultar la ventana principal
 #radio de la circunferencia ---> Un cilindro en 3D
 a = simpledialog.askfloat("Ingreso de datos","Ingrese el valor de a: ")
 n = simpledialog.askinteger("Ingreso de datos","¿Cuántos sub-intervalos n desea en su sumatoria?: ")
@@ -30,7 +30,7 @@ if a is not None and n is not None:
         theta_ = np.linspace(0, 2*np.pi, 100)
         z_ = np.linspace(-10*a,10*a,100)
         theta, z_cili = np.meshgrid(theta_,z_)
-        r = a
+        r = a 
 
         x_cilindro = r*np.cos(theta)
         y_cilindro = r*np.sin(theta)
